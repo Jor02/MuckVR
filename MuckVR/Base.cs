@@ -29,6 +29,9 @@ namespace MuckVR
             SteamVR_Settings settings = ScriptableObject.CreateInstance<SteamVR_Settings>();
             SteamVR.Initialize(true);
 
+            //Initalize controls and controllers
+            SteamVR_Actions.PreInitialize();
+
             //Subscribe to sceneLoaded event
             SceneManager.sceneLoaded += OnSceneLoad;
         }

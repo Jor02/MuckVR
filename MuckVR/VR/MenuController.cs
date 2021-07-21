@@ -15,9 +15,6 @@ namespace MuckVR.VR
 
         public MenuController()
         {
-            //Initalize controlls and controllers
-            SteamVR_Actions.PreInitialize();
-
             //Instantiate VR camera rig from asset bundle
             AssetBundle vrAssets = AssetBundle.LoadFromFile(Application.dataPath + "/vrassets");
             GameObject CameraRig = Instantiate(vrAssets.LoadAsset<GameObject>("MenuRig"));
