@@ -17,6 +17,8 @@ namespace MuckVR
     [BepInProcess("MuckVR.exe")]
     public class Base : BaseUnityPlugin
     {
+        public static AssetBundle vrAssets;
+
         /// <summary>
         /// Main entry point for MuckVR
         /// </summary>
@@ -28,6 +30,8 @@ namespace MuckVR
             //Add SteamVR
             SteamVR_Settings settings = ScriptableObject.CreateInstance<SteamVR_Settings>();
             SteamVR.Initialize(true);
+
+            vrAssets = AssetBundle.LoadFromFile(Application.dataPath + "/vrassets");
 
             //Subscribe to sceneLoaded event
             SceneManager.sceneLoaded += OnSceneLoad;
@@ -75,12 +79,28 @@ namespace MuckVR
         /// </summary>
         private IEnumerator InitGame()
         {
-            //Wait for player to be spawned
-            while (GameObject.Find("/Player") == null && Camera.main == null) yield return null;
+            while (Camera.current == null) yield return null;
+            Camera curCam = Camera.current;
+            curCam.transform.parent = null;
 
-            Canvas UI = GameObject.Find("/UI (1)").GetComponent<Canvas>();
-            UI.worldCamera = Camera.main;
-            UI.renderMode = RenderMode.ScreenSpaceOverlay;
+            GameObject loader = VR.Gameplay.InitializeUI.CreateLoader(curCam.transform.position, 10);
+
+            //Wait for player to be spawned
+            while (!LoadingScreen.Instance.background.gameObject.activeSelf) yield return null;
+            while (LoadingScreen.Instance.canvasGroup.alpha > 0)
+            {
+                curCam.transform.position = Vector3.up * 1000f;
+                curCam.transform.rotation = Quaternion.Euler(Vector3.forward);
+
+                loader.transform.position = curCam.transform.position;
+                yield return new WaitForEndOfFrame();
+            }
+
+            //Disable load screen
+            loader.SetActive(false);
+
+            //Set UI
+            new GameObject("UI Init", typeof(VR.Gameplay.InitializeUI));
         }
         #endregion
 

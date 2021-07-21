@@ -21,9 +21,7 @@ namespace MuckVR.VR
             SteamVR_Actions.PreInitialize();
 
             //Instantiate VR camera rig from asset bundle
-            AssetBundle vrAssets = AssetBundle.LoadFromFile(Application.dataPath + "/vrassets");
-            GameObject CameraRig = Instantiate(vrAssets.LoadAsset<GameObject>("MenuRig"));
-            vrAssets.Unload(false);
+            GameObject CameraRig = Instantiate(Base.vrAssets.LoadAsset<GameObject>("MenuRig"));
 
             //Place VR camera rig at the right position
             CameraRig.transform.position = new Vector3(103.17f, 22.54f, 652.07f);
