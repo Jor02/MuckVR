@@ -67,7 +67,6 @@ namespace MuckVR
             VR.MenuController menuController = new GameObject("MenuVR").AddComponent<VR.MenuController>();
 
             //World space
-            UI.worldCamera = menuController.UICam;
             UI.renderMode = RenderMode.WorldSpace;
         }
 

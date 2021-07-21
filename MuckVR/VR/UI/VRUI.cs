@@ -7,8 +7,15 @@ using Valve.VR.Extras;
 
 namespace MuckVR.VR.UI
 {
+    /// <summary>
+    /// UI Helper Classes
+    /// </summary>
     public class VRUI
     {
+        /// <summary>
+        /// Previously used for UI interaction
+        /// Using MuckVR.VR.UI.VRUIInput now
+        /// </summary>
         public static class Input
         {
             private static GameObject currentElement;
@@ -41,29 +48,6 @@ namespace MuckVR.VR.UI
                     currentElement = null;
                 }
             }
-        }
-    }
-
-    class UIHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-    {
-        private Vector3 pressedPos;
-        private Vector3 defaultPos;
-
-        public UIHover()
-        {
-            Vector3 pos = GetComponent<RectTransform>().anchoredPosition3D;
-            defaultPos = pos + transform.position;
-            pressedPos = transform.localPosition + transform.forward * 0.1f;
-        }
-
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-            transform.localPosition += transform.forward * 0.1f;
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-            transform.localPosition = defaultPos;
         }
     }
 }

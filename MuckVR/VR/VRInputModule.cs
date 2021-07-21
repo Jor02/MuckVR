@@ -7,6 +7,11 @@ using Valve.VR;
 
 namespace MuckVR.VR
 {
+    /// <summary>
+    /// [Obsolete] System to interact with UI
+    /// Using MuckVR.VR.UI.VRUIInput now
+    /// </summary>
+    [System.Obsolete]
     class VRInputModule : MonoBehaviour
     {
         PointerEventData eventData;
@@ -83,7 +88,7 @@ namespace MuckVR.VR
             results.Clear();
 
             //Should be vr input
-            menu.GetInputs(eventData);
+            //menu.GetInputs(eventData);
 
             //if (Input.GetKeyDown(KeyCode.Space)) ProcessDown(eventData);
             //if (Input.GetKeyUp(KeyCode.Space)) ProcessUp(eventData);
