@@ -8,14 +8,16 @@ namespace MuckVR.VR.UI
     /// </summary>
     public class UIButtonCollider : MonoBehaviour
     {
-        void Awake() => StartCoroutine(GetAddBox());
+        void Awake() => StartCoroutine(AddBox());
 
-        private IEnumerator GetAddBox()
+        private IEnumerator AddBox()
         {
+            //UI apparently needs a frame to initalize
             yield return new WaitForEndOfFrame();
+
             BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
             Rect scale = gameObject.GetComponent<RectTransform>().rect;
-            boxCollider.size = new Vector3(scale.width, scale.height, 1);
+            boxCollider.size = new Vector3(scale.width, scale.height, 0);
         }
     }
 }

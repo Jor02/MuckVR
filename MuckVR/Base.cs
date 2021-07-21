@@ -126,12 +126,16 @@ namespace MuckVR
             }
         }
 
+#if (DEBUG || DEBUGNOMENU)
+        /// <summary>
+        /// Disables fullscreen to more easily check console
+        /// </summary>
         void Update()
         {
-#if DEBUG
+
             if (Screen.fullScreen) Screen.fullScreen = false;
-#endif
         }
+#endif
         #endregion
     }
 }

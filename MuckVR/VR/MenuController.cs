@@ -11,9 +11,10 @@ namespace MuckVR.VR
     class MenuController : MonoBehaviour
     {
         public SteamVR_Action_Boolean interactWithUI = SteamVR_Input.GetBooleanAction("InteractUI");
-
-        public Controller curController { get; private set; }
-
+        
+        /// <summary>
+        /// Enables vr in the main menu
+        /// </summary>
         public MenuController()
         {
             //Initalize controlls and controllers
@@ -36,9 +37,13 @@ namespace MuckVR.VR
             StartCoroutine(AddButtons());
 
 #if DEBUGNOMENU
+            //Automatically starts the game on the DEBUGNOMENU configuration
             StartCoroutine(StartGame());
         }
 
+        /// <summary>
+        /// Creates a lobby and starts it
+        /// </summary>
         IEnumerator StartGame()
         {
             while (!SteamManager.Instance.ConnectedToSteam()) yield return null;

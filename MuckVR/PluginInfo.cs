@@ -8,11 +8,12 @@ using System.Text;
 [assembly: AssemblyTitle(PluginInfo.NAME + " (" + PluginInfo.GUID + ")")]
 [assembly: AssemblyProduct(PluginInfo.NAME)]
 
-/// <summary>
-/// Based on https://github.com/BepInEx/BepInEx.PluginTemplate/blob/main/src/PluginInfo.cs
-/// </summary>
 namespace MuckVR
 {
+    /// <summary>
+    /// Plugin infomation
+    /// Based on https://github.com/BepInEx/BepInEx.PluginTemplate/blob/main/src/PluginInfo.cs
+    /// </summary>
     internal static class PluginInfo
     {
         public const string GUID = "com.jor02.muckvr";

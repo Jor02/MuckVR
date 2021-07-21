@@ -14,8 +14,9 @@ namespace MuckVR.VR.UI
     {
         /// <summary>
         /// Previously used for UI interaction
-        /// Using MuckVR.VR.UI.VRUIInput now
+        /// Using MuckVR.VR.UI.VRUIInput instead
         /// </summary>
+        [Obsolete]
         public static class Input
         {
             private static GameObject currentElement;

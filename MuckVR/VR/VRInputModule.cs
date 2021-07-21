@@ -9,7 +9,7 @@ namespace MuckVR.VR
 {
     /// <summary>
     /// [Obsolete] System to interact with UI
-    /// Using MuckVR.VR.UI.VRUIInput now
+    /// Using MuckVR.VR.UI.VRUIInput instead
     /// </summary>
     [System.Obsolete]
     class VRInputModule : MonoBehaviour
