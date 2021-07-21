@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using MuckVR.VR.UI;
 using Valve.VR;
+using Steamworks;
 
 namespace MuckVR.VR
 {
@@ -15,6 +16,9 @@ namespace MuckVR.VR
 
         public MenuController()
         {
+            //Initalize controlls and controllers
+            SteamVR_Actions.PreInitialize();
+
             //Instantiate VR camera rig from asset bundle
             AssetBundle vrAssets = AssetBundle.LoadFromFile(Application.dataPath + "/vrassets");
             GameObject CameraRig = Instantiate(vrAssets.LoadAsset<GameObject>("MenuRig"));
@@ -30,7 +34,21 @@ namespace MuckVR.VR
 
             //Add raycast colliders to buttons
             StartCoroutine(AddButtons());
+
+#if DEBUGNOMENU
+            StartCoroutine(StartGame());
         }
+
+        IEnumerator StartGame()
+        {
+            while (!SteamManager.Instance.ConnectedToSteam()) yield return null;
+            Resources.FindObjectsOfTypeAll<MenuUI>()[0].StartLobby();
+            yield return new WaitForSeconds(1f);
+            Resources.FindObjectsOfTypeAll<MenuUI>()[0].StartGame();
+        }
+#else
+        }
+#endif
 
         /// <summary>
         /// Adds raycast colliders to buttons

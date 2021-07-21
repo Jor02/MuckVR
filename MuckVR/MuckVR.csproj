@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<Authors>Jor02</Authors>
+	<Configurations>Debug;Release;DebugNoMenu</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,6 +17,9 @@
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Steamworks.Win64">
+      <HintPath>..\Libs\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="SteamVR">
       <HintPath>..\Libs\SteamVR.dll</HintPath>

@@ -29,9 +29,6 @@ namespace MuckVR
             SteamVR_Settings settings = ScriptableObject.CreateInstance<SteamVR_Settings>();
             SteamVR.Initialize(true);
 
-            //Initalize controls and controllers
-            SteamVR_Actions.PreInitialize();
-
             //Subscribe to sceneLoaded event
             SceneManager.sceneLoaded += OnSceneLoad;
         }
@@ -76,9 +73,14 @@ namespace MuckVR
         /// <summary>
         /// Prepares game for VR
         /// </summary>
-        private void InitGame()
+        private IEnumerator InitGame()
         {
+            //Wait for player to be spawned
+            while (GameObject.Find("/Player") == null && Camera.main == null) yield return null;
 
+            Canvas UI = GameObject.Find("/UI (1)").GetComponent<Canvas>();
+            UI.worldCamera = Camera.main;
+            UI.renderMode = RenderMode.ScreenSpaceOverlay;
         }
         #endregion
 
@@ -116,7 +118,7 @@ namespace MuckVR
             switch (scene.name)
             {
                 case "GameAfterLobby":
-                    InitGame();
+                    StartCoroutine(InitGame());
                     break;
                 case "Menu":
                     InitMenu();
