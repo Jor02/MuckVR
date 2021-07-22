@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using BepInEx;
 using TMPro;
 using Valve.VR;
+using MuckVR.VR.Gameplay;
 
 namespace MuckVR
 {
@@ -79,20 +80,26 @@ namespace MuckVR
         /// </summary>
         private IEnumerator InitGame()
         {
+            //Create menu camera
             Camera.SetupCurrent(new GameObject("TempCam").AddComponent<Camera>());
-            //while (Camera.current == null) yield return null;
             Camera curCam = Camera.current;
+            
+            //Create menu camera pivot
             GameObject camPivot = new GameObject("Cam Pivot");
 
+            //Apply camera transforms
             curCam.transform.parent = camPivot.transform;
             curCam.transform.localPosition = Vector3.zero;
             curCam.transform.rotation = Quaternion.Euler(0, -curCam.transform.eulerAngles.y, 0);
 
+            //Create loading area
             GameObject loader = VR.Gameplay.InitializeUI.CreateLoader(curCam.transform.position, 10);
+            
+            //Apply camera pivot transforms
             camPivot.transform.parent = loader.transform;
             camPivot.transform.localPosition = Vector3.zero;
 
-            //Wait for Game to be loaded
+            //While game isn't to be loaded
             while (!LoadingScreen.Instance.background.gameObject.activeSelf) yield return null;
             while (LoadingScreen.Instance.canvasGroup.alpha > 0)
             {
@@ -103,7 +110,7 @@ namespace MuckVR
                 yield return new WaitForEndOfFrame();
             }
 
-            //Disable load screen
+            //Disable load area
             loader.SetActive(false);
 
             //Set UI
