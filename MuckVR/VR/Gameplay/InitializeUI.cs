@@ -28,20 +28,29 @@ namespace MuckVR.VR.Gameplay
             width = 1 / UITransform.rect.width;
             height = 1 / UITransform.rect.height;
 
-            ResizeCanvas(0.3f);
+            ResizeCanvas(1f);
+            SetActive();
+        }
+
+        void SetActive()
+        {
+            UITransform.Find("Crosshair").gameObject.SetActive(false);
+            UITransform.Find("Chat").gameObject.SetActive(false);
+            UITransform.GetComponentInChildren<ExtraUI>().gameObject.SetActive(false);
         }
 
         void ResizeCanvas(float distance)
         {
             float frustumHeight = 2.0f * distance * Mathf.Tan(SteamVR.instance.fieldOfView * 0.5f * Mathf.Deg2Rad);
-            float frustumWidth = frustumHeight * SteamVR.instance.aspect;
+            //float frustumWidth = frustumHeight * SteamVR.instance.aspect;
 
             Vector3 camsize = camera.transform.lossyScale;
             camsize.x = 1 / camsize.x;
             camsize.y = 1 / camsize.y;
             camsize.z = 1 / camsize.z;
 
-            UITransform.localScale = camsize * width * frustumWidth;
+            //UITransform.localScale = camsize * width * frustumWidth;
+            UITransform.localScale = camsize * width * frustumHeight;
             UITransform.localPosition = Vector3.forward * camsize.z * distance;
         }
 
