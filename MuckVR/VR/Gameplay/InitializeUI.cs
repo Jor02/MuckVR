@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using Valve.VR;
 
 namespace MuckVR.VR.Gameplay
 {
@@ -32,8 +33,8 @@ namespace MuckVR.VR.Gameplay
 
         void ResizeCanvas(float distance)
         {
-            float frustumHeight = 2.0f * distance * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-            float frustumWidth = frustumHeight * camera.aspect;
+            float frustumHeight = 2.0f * distance * Mathf.Tan(SteamVR.instance.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            float frustumWidth = frustumHeight * SteamVR.instance.aspect;
 
             Vector3 camsize = camera.transform.lossyScale;
             camsize.x = 1 / camsize.x;
