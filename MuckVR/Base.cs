@@ -79,18 +79,25 @@ namespace MuckVR
         /// </summary>
         private IEnumerator InitGame()
         {
-            while (Camera.current == null) yield return null;
+            Camera.SetupCurrent(new GameObject("TempCam").AddComponent<Camera>());
+            //while (Camera.current == null) yield return null;
             Camera curCam = Camera.current;
-            curCam.transform.parent = null;
+            GameObject camPivot = new GameObject("Cam Pivot");
+
+            curCam.transform.parent = camPivot.transform;
+            curCam.transform.localPosition = Vector3.zero;
+            curCam.transform.rotation = Quaternion.Euler(0, -curCam.transform.eulerAngles.y, 0);
 
             GameObject loader = VR.Gameplay.InitializeUI.CreateLoader(curCam.transform.position, 10);
+            camPivot.transform.parent = loader.transform;
+            camPivot.transform.localPosition = Vector3.zero;
 
-            //Wait for player to be spawned
+            //Wait for Game to be loaded
             while (!LoadingScreen.Instance.background.gameObject.activeSelf) yield return null;
             while (LoadingScreen.Instance.canvasGroup.alpha > 0)
             {
-                curCam.transform.position = Vector3.up * 1000f;
-                curCam.transform.rotation = Quaternion.Euler(Vector3.forward);
+                camPivot.transform.position = Vector3.up * 1000f;
+                camPivot.transform.rotation = Quaternion.Euler(Vector3.forward);
 
                 loader.transform.position = curCam.transform.position;
                 yield return new WaitForEndOfFrame();
@@ -105,6 +112,12 @@ namespace MuckVR
         #endregion
 
         #region Methods
+        IEnumerator InitalizeSteamVR()
+        {
+            while (SteamVR.initializedState == SteamVR.InitializedStates.Initializing) yield return null;
+            SteamVR.settings.trackingSpace = ETrackingUniverseOrigin.TrackingUniverseStanding;
+        }
+
         /// <summary>
         /// Updates game version in UI
         /// </summary>
