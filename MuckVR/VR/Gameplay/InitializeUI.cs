@@ -28,7 +28,7 @@ namespace MuckVR.VR.Gameplay
             width = 1 / UITransform.rect.width;
             height = 1 / UITransform.rect.height;
 
-            ResizeCanvas(1f);
+            StartCoroutine(ResizeCanvas(1f));
             SetActive();
         }
 
@@ -39,8 +39,11 @@ namespace MuckVR.VR.Gameplay
             UITransform.GetComponentInChildren<ExtraUI>().gameObject.SetActive(false);
         }
 
-        void ResizeCanvas(float distance)
         {
+        IEnumerator ResizeCanvas(float distance)
+        {
+            while (SteamVR.initializedState == SteamVR.InitializedStates.Initializing) yield return null;
+
             float frustumHeight = 2.0f * distance * Mathf.Tan(SteamVR.instance.fieldOfView * 0.5f * Mathf.Deg2Rad);
             //float frustumWidth = frustumHeight * SteamVR.instance.aspect;
 

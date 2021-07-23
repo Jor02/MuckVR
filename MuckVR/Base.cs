@@ -80,6 +80,7 @@ namespace MuckVR
         /// </summary>
         private IEnumerator InitGame()
         {
+            #region Loading Screen
             //Create menu camera
             Camera.SetupCurrent(new GameObject("TempCam").AddComponent<Camera>());
             Camera curCam = Camera.current;
@@ -112,9 +113,16 @@ namespace MuckVR
 
             //Disable load area
             loader.SetActive(false);
+            #endregion
+
+            #region Setup VR
+
+            //Prepare UI
+            InitializeUI UI = new GameObject("UI Init").AddComponent<InitializeUI>();
 
             //Set UI
             new GameObject("UI Init", typeof(VR.Gameplay.InitializeUI));
+            #endregion
         }
         #endregion
 
