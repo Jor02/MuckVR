@@ -39,7 +39,11 @@ namespace MuckVR.VR.Gameplay
             UITransform.GetComponentInChildren<ExtraUI>().gameObject.SetActive(false);
         }
 
+        public void SetTransforms(VRPlayer player)
         {
+            Debug.LogWarning("Setting Transforms");
+        }
+
         IEnumerator ResizeCanvas(float distance)
         {
             while (SteamVR.initializedState == SteamVR.InitializedStates.Initializing) yield return null;

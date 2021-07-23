@@ -7,6 +7,8 @@ using BepInEx;
 using TMPro;
 using Valve.VR;
 using MuckVR.VR.Gameplay;
+using HarmonyLib;
+using System.Reflection;
 
 namespace MuckVR
 {
@@ -36,6 +38,9 @@ namespace MuckVR
 
             //Subscribe to sceneLoaded event
             SceneManager.sceneLoaded += OnSceneLoad;
+
+            Harmony harmony = new Harmony("com.jor02.muckvr");
+            harmony.PatchAll();
         }
 
         #region Setup
@@ -120,8 +125,8 @@ namespace MuckVR
             //Prepare UI
             InitializeUI UI = new GameObject("UI Init").AddComponent<InitializeUI>();
 
-            //Set UI
-            new GameObject("UI Init", typeof(VR.Gameplay.InitializeUI));
+            //Set worldspace UI
+            UI.SetTransforms(VRPlayer.instance);
             #endregion
         }
         #endregion
