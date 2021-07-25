@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using BepInEx.Logging;
+using MuckVR.VR.Gameplay;
 
 namespace MuckVR.Patches.Player
 {
@@ -31,7 +32,212 @@ namespace MuckVR.Patches.Player
         static bool Prefix(ref Transform ___playerCam, ref Transform ___orientation)
         {
             ___orientation.transform.rotation = Quaternion.Euler(0f, ___playerCam.eulerAngles.y, 0f);
-            return false;
+            
+			//Skip original code
+			return false;
         }
     }
+
+    /// <summary>
+    /// Patches PlayerInput's MyInput to use controller inputs
+    /// </summary>
+	[HarmonyPatch(typeof(PlayerInput), "MyInput")]
+    class PlayerInputMyInputPatch
+    {
+		static bool Prefix(PlayerInput __instance, ref PlayerMovement ___playerMovement, ref float ___mouseScroll)
+        {
+			//Skip movement
+			if (OtherInput.Instance.OtherUiActive() && !Map.Instance.active)
+			{
+				var StopInput = typeof(PlayerInput).GetMethod("StopInput", BindingFlags.NonPublic | BindingFlags.Instance);
+				StopInput.Invoke(__instance, null);
+				return false;
+			}
+
+			if (!___playerMovement)
+				return false;
+
+			if (!VRInput.instance)
+				return false;
+
+			//Reset movement
+
+			__instance.SetPrivatePropertyValue<float>("x", 0);
+			__instance.SetPrivatePropertyValue<float>("y", 0);
+
+			//WASD TODO: Need to be joystick
+			/*
+			if (Input.GetKey(InputManager.forward))
+			{
+				float num = ___y;
+				___y = num + 1f;
+			}
+			else if (Input.GetKey(InputManager.backwards))
+			{
+				float num = ___y;
+				___y = num - 1f;
+			}
+			if (Input.GetKey(InputManager.left))
+			{
+				float num = ___x;
+				___x = num - 1f;
+			}
+			if (Input.GetKey(InputManager.right))
+			{
+				float num = ___x;
+				___x = num + 1f;
+			} */
+
+			//Joystick movement
+
+			Vector2 Joy = VRInput.instance.GetJoyStick;
+			__instance.SetPrivatePropertyValue("x", Joy.x);
+			__instance.SetPrivatePropertyValue("y", Joy.y);
+
+			//Set properties/field
+			__instance.SetPrivatePropertyValue("jumping", VRInput.instance.GetJump);
+			__instance.SetPrivatePropertyValue("sprinting", Input.GetKey(InputManager.sprint));
+			___mouseScroll = Input.mouseScrollDelta.y;
+
+			//Jump
+			if (Input.GetKeyDown(InputManager.jump))
+			{
+				___playerMovement.Jump();
+			}
+
+			//Attack / LMB Down
+			if (Input.GetKey(InputManager.leftClick))
+			{
+				UseInventory.Instance.Use();
+			}
+
+			//Stop eat / LMB Up
+			if (Input.GetKeyUp(InputManager.leftClick))
+			{
+				UseInventory.Instance.UseButtonUp();
+			}
+
+			//Place Item
+			if (Input.GetKeyDown(InputManager.rightClick))
+			{
+				BuildManager.Instance.RequestBuildItem();
+			}
+
+			//Rotate build
+			if (___mouseScroll != 0f)
+			{
+				BuildManager.Instance.RotateBuild((int)Mathf.Sign(___mouseScroll));
+			}
+
+			//Rotate build
+			if (Input.GetKeyDown(KeyCode.R))
+			{
+				BuildManager.Instance.RotateBuild(1);
+			}
+
+			//Toggle hud
+			if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.U) && Input.GetKeyDown(KeyCode.I))
+			{
+				UiController.Instance.ToggleHud();
+			}
+
+			float x = __instance.GetPrivatePropertyValue<float>("x");
+			float y = __instance.GetPrivatePropertyValue<float>("y");
+
+
+			___playerMovement.SetInput(
+                new Vector2(x, y),
+                __instance.GetPrivatePropertyValue<bool>("crouching"),
+                __instance.GetPrivatePropertyValue<bool>("jumping"),
+                __instance.GetPrivatePropertyValue<bool>("sprinting")
+			);
+			
+			//Skip original code
+			return false;
+		}
+    }
+
+	/// <summary>
+	/// Allows changing private properties
+	/// Source: https://stackoverflow.com/a/1565766/9179334
+	/// </summary>
+	public static class PropertiesExtension
+    {
+		/// <summary>
+		/// Returns a _private_ Property Value from a given Object. Uses Reflection.
+		/// Throws a ArgumentOutOfRangeException if the Property is not found.
+		/// </summary>
+		/// <typeparam name="T">Type of the Property</typeparam>
+		/// <param name="obj">Object from where the Property Value is returned</param>
+		/// <param name="propName">Propertyname as string.</param>
+		/// <returns>PropertyValue</returns>
+		public static T GetPrivatePropertyValue<T>(this object obj, string propName)
+		{
+			if (obj == null) throw new ArgumentNullException("obj");
+			PropertyInfo pi = obj.GetType().GetProperty(propName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			if (pi == null) throw new ArgumentOutOfRangeException("propName", string.Format("Property {0} was not found in Type {1}", propName, obj.GetType().FullName));
+			return (T)pi.GetValue(obj, null);
+		}
+
+		/// <summary>
+		/// Returns a private Property Value from a given Object. Uses Reflection.
+		/// Throws a ArgumentOutOfRangeException if the Property is not found.
+		/// </summary>
+		/// <typeparam name="T">Type of the Property</typeparam>
+		/// <param name="obj">Object from where the Property Value is returned</param>
+		/// <param name="propName">Propertyname as string.</param>
+		/// <returns>PropertyValue</returns>
+		public static T GetPrivateFieldValue<T>(this object obj, string propName)
+		{
+			if (obj == null) throw new ArgumentNullException("obj");
+			Type t = obj.GetType();
+			FieldInfo fi = null;
+			while (fi == null && t != null)
+			{
+				fi = t.GetField(propName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				t = t.BaseType;
+			}
+			if (fi == null) throw new ArgumentOutOfRangeException("propName", string.Format("Field {0} was not found in Type {1}", propName, obj.GetType().FullName));
+			return (T)fi.GetValue(obj);
+		}
+
+		/// <summary>
+		/// Sets a _private_ Property Value from a given Object. Uses Reflection.
+		/// Throws a ArgumentOutOfRangeException if the Property is not found.
+		/// </summary>
+		/// <typeparam name="T">Type of the Property</typeparam>
+		/// <param name="obj">Object from where the Property Value is set</param>
+		/// <param name="propName">Propertyname as string.</param>
+		/// <param name="val">Value to set.</param>
+		/// <returns>PropertyValue</returns>
+		public static void SetPrivatePropertyValue<T>(this object obj, string propName, T val)
+		{
+			Type t = obj.GetType();
+			if (t.GetProperty(propName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
+				throw new ArgumentOutOfRangeException("propName", string.Format("Property {0} was not found in Type {1}", propName, obj.GetType().FullName));
+			t.InvokeMember(propName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
+		}
+
+		/// <summary>
+		/// Set a private Property Value on a given Object. Uses Reflection.
+		/// </summary>
+		/// <typeparam name="T">Type of the Property</typeparam>
+		/// <param name="obj">Object from where the Property Value is returned</param>
+		/// <param name="propName">Propertyname as string.</param>
+		/// <param name="val">the value to set</param>
+		/// <exception cref="ArgumentOutOfRangeException">if the Property is not found</exception>
+		public static void SetPrivateFieldValue<T>(this object obj, string propName, T val)
+		{
+			if (obj == null) throw new ArgumentNullException("obj");
+			Type t = obj.GetType();
+			FieldInfo fi = null;
+			while (fi == null && t != null)
+			{
+				fi = t.GetField(propName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				t = t.BaseType;
+			}
+			if (fi == null) throw new ArgumentOutOfRangeException("propName", string.Format("Field {0} was not found in Type {1}", propName, obj.GetType().FullName));
+			fi.SetValue(obj, val);
+		}
+	}
 }

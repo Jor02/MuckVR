@@ -9,6 +9,8 @@ namespace MuckVR.VR.Gameplay
     {
         public static VRPlayer instance;
 
+        public VRInput input;
+
         public Transform VRCamera;
         CapsuleCollider collider;
 
@@ -20,6 +22,7 @@ namespace MuckVR.VR.Gameplay
             VRCamera = GetComponentInChildren<Camera>().transform;
 
             PlayerMovement.Instance.playerCam = VRCamera;
+            input = PlayerMovement.Instance.gameObject.AddComponent<VRInput>();
 
             collider = PlayerMovement.Instance.gameObject.GetComponent<CapsuleCollider>();
         }
