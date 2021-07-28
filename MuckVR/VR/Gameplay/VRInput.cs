@@ -25,7 +25,6 @@ namespace MuckVR.VR.Gameplay
         {
             get
             {
-                Debug.Log(joystick[right].axis);
                 return joystick[right].axis;
             }
         }
@@ -34,7 +33,6 @@ namespace MuckVR.VR.Gameplay
         {
             get
             {
-                Debug.Log("bein called 2");
                 return jump[right].state;
             }
         }

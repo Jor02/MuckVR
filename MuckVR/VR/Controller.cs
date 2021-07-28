@@ -6,8 +6,33 @@ using Valve.VR;
 
 namespace MuckVR.VR
 {
-    class Controller : MonoBehaviour
+    public class Controller : MonoBehaviour
     {
+        public Transform rayPivot { get; private set; }
+
+        //LineRenderer uiLine;
+
+        public Controller()
+        {
+            rayPivot = transform.Find("HandDir");
+
+            /*
+            uiLine = gameObject.AddComponent<LineRenderer>();
+            uiLine.material = new Material(Shader.Find("Particles/Standard Unlit"));
+            uiLine.startColor = uiLine.endColor = Color.green;
+            uiLine.startWidth = uiLine.endWidth = 0.01f;
+            */
+        }
+
+        /*
+        void Update()
+        {
+            uiLine.SetPosition(0, rayPivot.position);
+            uiLine.SetPosition(1, rayPivot.position + rayPivot.forward * 1);
+        }
+        */
+
+        /* //Don't think i'll need this 
         public Transform rayPivot { get; private set; }
         private LineRenderer uiLine;
 
@@ -60,5 +85,6 @@ namespace MuckVR.VR
         {
             uiLine.enabled = false;
         }
+        */
     }
 }

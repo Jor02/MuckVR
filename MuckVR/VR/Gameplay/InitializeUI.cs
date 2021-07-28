@@ -16,6 +16,11 @@ namespace MuckVR.VR.Gameplay
 
         public InitializeUI()
         {
+            //Disable UI collisions
+            for (var i = 0; i <= 19; i++) {
+                Physics.IgnoreLayerCollision(5, i);
+            }
+
             Canvas UI = GameObject.Find("/UI (1)").GetComponent<Canvas>();
             UI.renderMode = RenderMode.WorldSpace;
             
@@ -42,6 +47,23 @@ namespace MuckVR.VR.Gameplay
         public void SetTransforms(VRPlayer player)
         {
             Debug.LogWarning("Setting Transforms");
+
+            // == Set inventory position ==
+            Transform inventory = UITransform.Find("Hotkeys");
+
+            Transform inventoryCanvas = VRPlayer.instance.LTrans.Find("LeftHand/InventoryCanvas");
+            inventoryCanvas.gameObject.AddComponent<VRInventory>();
+            
+            inventory.parent = inventoryCanvas;
+            ResetLocalTransform(inventory);
+            inventory.localPosition = new Vector3(-195.2599f, -42.668f, 0);
+        }
+
+        void ResetLocalTransform(Transform targetTransform)
+        {
+            targetTransform.localRotation = Quaternion.identity;
+            targetTransform.localPosition = Vector3.zero;
+            targetTransform.localScale = Vector3.one;
         }
 
         IEnumerator ResizeCanvas(float distance)
@@ -49,14 +71,12 @@ namespace MuckVR.VR.Gameplay
             while (SteamVR.initializedState == SteamVR.InitializedStates.Initializing) yield return null;
 
             float frustumHeight = 2.0f * distance * Mathf.Tan(SteamVR.instance.fieldOfView * 0.5f * Mathf.Deg2Rad);
-            //float frustumWidth = frustumHeight * SteamVR.instance.aspect;
 
             Vector3 camsize = camera.transform.lossyScale;
             camsize.x = 1 / camsize.x;
             camsize.y = 1 / camsize.y;
             camsize.z = 1 / camsize.z;
 
-            //UITransform.localScale = camsize * width * frustumWidth;
             UITransform.localScale = camsize * width * frustumHeight;
             UITransform.localPosition = Vector3.forward * camsize.z * distance;
         }

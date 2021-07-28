@@ -9,10 +9,16 @@ namespace MuckVR.VR.Gameplay
     {
         public static VRPlayer instance;
 
-        public VRInput input;
+        public VRInput input { get; }
 
-        public Transform VRCamera;
+        public Transform VRCamera { get; }
         CapsuleCollider collider;
+
+        public Transform LTrans { get; }
+        public Transform RTrans { get; }
+
+        public Controller LHand { get; }
+        public Controller RHand { get; }
 
         public VRPlayer()
         {
@@ -25,6 +31,12 @@ namespace MuckVR.VR.Gameplay
             input = PlayerMovement.Instance.gameObject.AddComponent<VRInput>();
 
             collider = PlayerMovement.Instance.gameObject.GetComponent<CapsuleCollider>();
+
+            LTrans = transform.Find("Controller (left)");
+            RTrans = transform.Find("Controller (right)");
+
+            LHand = LTrans.Find("LeftHand").gameObject.AddComponent<Controller>();
+            RHand = RTrans.Find("RightHand").gameObject.AddComponent<Controller>();
         }
 
         void FixedUpdate()
