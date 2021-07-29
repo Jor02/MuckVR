@@ -24,8 +24,15 @@ namespace MuckVR.VR.Gameplay
         {
             instance = this;
 
+            //Set vr hands position/scale
             gameObject.AddComponent<SetHandPos>();
-            VRCamera = GetComponentInChildren<Camera>().transform;
+
+            Camera cam = transform.Find("Main Camera").GetComponent<Camera>();
+
+            cam.cullingMask |= (1 << 14); //Display WeaponSelf layer
+
+            VRCamera = cam.transform;
+            VRCamera.Find("GunCam").GetComponent<Camera>().cullingMask = 0;
 
             PlayerMovement.Instance.playerCam = VRCamera;
             input = PlayerMovement.Instance.gameObject.AddComponent<VRInput>();
