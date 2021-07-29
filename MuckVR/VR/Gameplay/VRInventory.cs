@@ -20,6 +20,8 @@ namespace MuckVR.VR.Gameplay
 
         Transform handPivot;
 
+        const int layerMask = 1 << 5;
+
         public VRInventory()
         {
             cameraTransform = VRPlayer.instance.VRCamera;
@@ -59,7 +61,7 @@ namespace MuckVR.VR.Gameplay
         void UpdateSlot()
         {
             RaycastHit hit;
-            if (Physics.Raycast(handPivot.position, handPivot.forward, out hit, 0.35f))
+            if (Physics.Raycast(handPivot.position, handPivot.forward, out hit, 0.35f, layerMask))
             {
                 if (hit.transform.parent == hotbarParent)
                 {
