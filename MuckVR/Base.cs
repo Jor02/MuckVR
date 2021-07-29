@@ -9,6 +9,7 @@ using Valve.VR;
 using MuckVR.VR.Gameplay;
 using HarmonyLib;
 using System.Reflection;
+using MuckVR.Utils;
 
 namespace MuckVR
 {
@@ -91,33 +92,29 @@ namespace MuckVR
             Camera curCam = Camera.current;
             
             //Create menu camera pivot
-            GameObject camPivot = new GameObject("Cam Pivot");
+            GameObject loadArea = new GameObject("Loading Box");
 
             //Apply camera transforms
-            curCam.transform.parent = camPivot.transform;
+            loadArea.transform.position = curCam.transform.position;
+            curCam.transform.parent = loadArea.transform;
             curCam.transform.localPosition = Vector3.zero;
             curCam.transform.rotation = Quaternion.Euler(0, -curCam.transform.eulerAngles.y, 0);
 
             //Create loading area
-            GameObject loader = VR.Gameplay.InitializeUI.CreateLoader(curCam.transform.position, 10);
-            
+            GameObject loader = InitializeUI.CreateLoader(curCam.transform.position, 10);
+
             //Apply camera pivot transforms
-            camPivot.transform.parent = loader.transform;
-            camPivot.transform.localPosition = Vector3.zero;
+            loader.transform.parent = loadArea.transform;
+            loader.transform.rotation = Quaternion.Euler(0, curCam.transform.rotation.y, 0);
+
+            loadArea.transform.position = Vector3.up * 1000f;
 
             //While game isn't to be loaded
             while (!LoadingScreen.Instance.background.gameObject.activeSelf) yield return null;
-            while (LoadingScreen.Instance.canvasGroup.alpha > 0)
-            {
-                camPivot.transform.position = Vector3.up * 1000f;
-                camPivot.transform.rotation = Quaternion.Euler(Vector3.forward);
-
-                loader.transform.position = curCam.transform.position;
-                yield return new WaitForEndOfFrame();
-            }
+            while (LoadingScreen.Instance.canvasGroup.alpha > 0) yield return null;
 
             //Disable load area
-            loader.SetActive(false);
+            loadArea.SetActive(false);
             #endregion
 
             #region Setup VR
