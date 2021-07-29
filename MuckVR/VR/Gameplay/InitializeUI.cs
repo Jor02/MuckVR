@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
+using MuckVR.Utils;
 
 namespace MuckVR.VR.Gameplay
 {
@@ -55,15 +56,8 @@ namespace MuckVR.VR.Gameplay
             inventoryCanvas.gameObject.AddComponent<VRInventory>();
             
             inventory.parent = inventoryCanvas;
-            ResetLocalTransform(inventory);
+            inventory.ResetLocalTransform();
             inventory.localPosition = new Vector3(-195.2599f, -42.668f, 0);
-        }
-
-        void ResetLocalTransform(Transform targetTransform)
-        {
-            targetTransform.localRotation = Quaternion.identity;
-            targetTransform.localPosition = Vector3.zero;
-            targetTransform.localScale = Vector3.one;
         }
 
         IEnumerator ResizeCanvas(float distance)
